@@ -5,9 +5,12 @@ import (
         "fmt"
         "os"
         "os/exec"
+        "runtime"
         "strings"
         "sync"
 )
+
+const os_version string = runtime.GOOS
 
 func main() {
         shell()
@@ -35,14 +38,28 @@ func exec_cmd(cmd string, wg *sync.WaitGroup) {
         parts := strings.Fields(cmd)
         head := parts[0]
         parts = parts[1:len(parts)]
-        if head == "cd" {
+        switch head {
+        case "exit":
+                os.Exit(0)
+        case "cd":
                 os.Chdir(parts[0])
-        } else {
-                out, err := exec.Command(head, parts...).Output()
-                if err != nil {
-                        fmt.Printf("%s\n", err)
+                fmt.Println("dir chaged")
+        default:
+                //out, err := exec.Command(head, parts...).Output()
+                if os_version != "windows" {
+                        out, err := exec.Command("sh", "-c", cmd).Output()
+                        if err != nil {
+                                fmt.Println("command not found")
+                        }
+                        wg.Done()
+                        fmt.Println(string(out))
+                } else {
+                        out, err := exec.Command("cmd.exe", "/c", cmd).Output()
+                        if err != nil {
+                                fmt.Println("command not found")
+                        }
+                        wg.Done()
+                        fmt.Println(string(out))
                 }
-                fmt.Printf("%s", out)
-                wg.Done()
         }
 }

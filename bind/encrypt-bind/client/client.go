@@ -5,6 +5,7 @@ import (
         "code.google.com/p/go.crypto/nacl/box"
         "crypto/rand"
         "encoding/base64"
+        "flag"
         "fmt"
         "log"
         "net"
@@ -18,8 +19,10 @@ type KeyHolder struct {
 }
 
 func main() {
-        peerKeys := &KeyHolder{}
-        server := "127.0.0.1:4444"
+        host := flag.String("host", "127.0.0.1", "Host to connect to")
+        port := flag.String("port", "4444", "Port to connect to")
+        flag.Parse()
+        server := *host + ":" + *port
         addr, err := net.ResolveTCPAddr("tcp", server)
         if err != nil {
                 fmt.Println(err)
@@ -30,6 +33,8 @@ func main() {
                 fmt.Println(err)
                 os.Exit(1)
         }
+        defer conn.Close()
+        peerKeys := &KeyHolder{}
         publicKey, privateKey, _ := setup()
         myKeys := &KeyHolder{publicKey, privateKey}
         var nonce [24]byte

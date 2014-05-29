@@ -3,6 +3,7 @@ package main
 import (
         "bufio"
         "encoding/base64"
+        "flag"
         "fmt"
         "log"
         "net"
@@ -15,7 +16,9 @@ import (
 const os_version string = runtime.GOOS
 
 func main() {
-        serv, err := net.Listen("tcp", ":4444")
+        port := flag.String("port", "4444", "Port to listen on")
+        flag.Parse()
+        serv, err := net.Listen("tcp", ":"+*port)
         if err != nil {
                 log.Fatal(err)
         }

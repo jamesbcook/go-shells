@@ -2,6 +2,7 @@ package main
 
 import (
         "bufio"
+        "flag"
         "fmt"
         "net"
         "os"
@@ -9,8 +10,10 @@ import (
 )
 
 func main() {
-
-        server := "127.0.0.1:4444"
+        host := flag.String("host", "127.0.0.1", "Host to connect to")
+        port := flag.String("port", "4444", "Port to connect to")
+        flag.Parse()
+        server := *host + ":" + *port
         addr, err := net.ResolveTCPAddr("tcp", server)
         if err != nil {
                 fmt.Println(err)

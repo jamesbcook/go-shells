@@ -3,6 +3,7 @@ package main
 import (
         "bufio"
         "encoding/base64"
+        "flag"
         "fmt"
         "log"
         "net"
@@ -11,13 +12,14 @@ import (
 )
 
 func main() {
-        port := "4444"
-        serv, err := net.Listen("tcp", ":"+port)
+        port := flag.String("port", "4444", "Port to listen on")
+        flag.Parse()
+        serv, err := net.Listen("tcp", ":"+*port)
         if err != nil {
                 log.Fatal(err)
         }
         defer serv.Close()
-        fmt.Println("Listening on port:", port)
+        fmt.Println("Listening on port:", *port)
         conn, err := serv.Accept()
         if err != nil {
                 fmt.Println("Error: ", err)
